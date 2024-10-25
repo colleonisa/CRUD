@@ -1,30 +1,41 @@
+require('dotenv').config();
 const express = require('express');
-const bodyParser = require('body-parser');
-const methodOverride = require('method-override');
-const expressLayouts = require('express-ejs-layouts');
+const session = require('express-session');
+const MySQLStore = require('express-mysql-session')(session);
+const path = require('path');
+const authRoutes = require('./routes/authRoutes');
 const indexRoutes = require('./routes/indexRoutes');
 const userRoutes = require('./routes/userRoutes');
-const produtoRoutes = require('./routes/produtoRoutes');
-const categoriaRoutes = require('./routes/categoriaRoutes');
-const vendaRoutes = require('./routes/vendaRoutes');
 
-const app = express();
-const PORT = process.env.PORT || 3000;
+// Inicializa a aplicação
+const app = express(); 
 
+// Configuração do parser de corpo (body parser)
+app.use(express.urlencoded({ extended: false }));
+
+// Importa o banco de dados apenas uma vez
+const db = require('./config/db');
+
+// Configuração de sessões com armazenamento no MySQL
+app.use(session({
+    secret: 'chave-secreta',
+    resave: false,
+    saveUninitialized: false,
+    store: new MySQLStore({}, db)
+}));
+
+// Configuração da pasta de visualizações e EJS
 app.set('view engine', 'ejs');
-app.set('views', __dirname + '/views');
-app.use(expressLayouts);
+app.set('views', path.join(__dirname, 'views'));
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(methodOverride('_method'));
+// Usar as rotas de autenticação
+app.use(authRoutes);
 
 app.use('/', indexRoutes);
 app.use('/users', userRoutes);
-app.use('/produtos', produtoRoutes);
-app.use('/categorias', categoriaRoutes);
-app.use('/vendas', vendaRoutes);
 
+// Iniciar o servidor
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+    console.log(`Servidor rodando na porta ${PORT}`);
 });

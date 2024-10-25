@@ -1,26 +1,13 @@
-CREATE DATABASE CRUDmRosa;
+CREATE DATABASE sistema_autenticacao;
 
-USE CRUDmRosa;
+USE sistema_autenticacao;
 
 CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(255) NOT NULL,
-    password VARCHAR(255) NOT NULL,
-    role ENUM('admin', 'user') NOT NULL
+    password VARCHAR(255) NOT NULL
 );
 
-CREATE TABLE categorias (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    nome VARCHAR(255) NOT NULL
-);
-
-
-CREATE TABLE produtos (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    nome VARCHAR(255) NOT NULL,
-    descricao TEXT NOT NULL,
-    preco DECIMAL(10,2) NOT NULL,
-    quantidade INT NOT NULL,
-    categoria INT NOT NULL,
-    FOREIGN KEY (categoria) REFERENCES categorias(id)
-);
+-- Insira um usuário com senha criptografada
+INSERT INTO users (username, password)
+VALUES ('admin', '$2b$10$KIX3UjUqYFS6A7xEd5AOiuFPvDeL6rMt7uf8DdWR72tA9E0UnTwYm'); -- senha: admin123
